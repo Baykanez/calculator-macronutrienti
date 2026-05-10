@@ -19,9 +19,20 @@ document.getElementById('form-calculator').addEventListener('submit', function (
   // TDEE
   let tdee = bmr * activitate;
 
-  // Ajustare obiectiv
-  if (obiectiv === 'slabire') tdee -= 500;
+  // Deficit sex-specific și TDEE de referință pentru plan progresiv
+  const deficit = sex === 'm' ? 500 : 300;
+  const tdeeBrut = Math.round(tdee);
+  const minimKcal = sex === 'm' ? 1500 : 1200;
+
+  if (obiectiv === 'slabire') tdee -= deficit;
   if (obiectiv === 'masa') tdee += 300;
+
+  // Prag minim recomandat la slăbire
+  let atinsPrag = false;
+  if (obiectiv === 'slabire' && tdee < minimKcal) {
+    tdee = minimKcal;
+    atinsPrag = true;
+  }
 
   const calorii = Math.round(tdee);
 
@@ -50,7 +61,47 @@ document.getElementById('form-calculator').addEventListener('submit', function (
   document.getElementById('r-grasimi').textContent = grasimilorG + ' g';
   document.getElementById('r-apa').textContent = apaMin + ' – ' + apaMax + ' litri';
 
-  document.getElementById('rezultate').classList.remove('hidden');
+  // Avertizare prag minim
+  const elAvertizare = document.getElementById('r-avertizare');
+  const elAvertizareText = document.getElementById('r-avertizare-text');
+  let avertizareTxt = '';
+  if (obiectiv === 'slabire' && atinsPrag) {
+    avertizareTxt = `Deficitul calculat scade sub pragul minim recomandat de ${minimKcal} kcal/zi pentru ${sex === 'm' ? 'bărbați' : 'femei'}. Aportul a fost ajustat automat la această valoare.`;
+    elAvertizareText.textContent = avertizareTxt;
+    elAvertizare.classList.remove('hidden');
+  } else {
+    elAvertizare.classList.add('hidden');
+  }
+
+  // Plan progresiv de reducere calorică
+  const elRecomandare = document.getElementById('r-recomandare');
+  const elPlanProgresiv = document.getElementById('r-plan-progresiv');
+  let planProgresivHTML = '';
+  let planProgresivTxt = '';
+
+  if (obiectiv === 'slabire') {
+    const pasi = deficit / 100;
+    for (let i = 1; i <= pasi; i++) {
+      const kcalZiua = tdeeBrut - i * 100;
+      const kcalAfisat = Math.max(kcalZiua, minimKcal);
+      const esteTinta = i === pasi || kcalZiua <= minimKcal;
+      const sufix = esteTinta ? ' ← țintă' : '';
+      planProgresivHTML += `Ziua ${i}: <strong>${kcalAfisat} kcal</strong>${esteTinta ? ' <em>← țintă</em>' : ''}<br>`;
+      planProgresivTxt += `Ziua ${i}: ${kcalAfisat} kcal${sufix}\n`;
+      if (kcalZiua <= minimKcal) break;
+    }
+    elPlanProgresiv.innerHTML = planProgresivHTML;
+    elRecomandare.classList.remove('hidden');
+  } else {
+    elRecomandare.classList.add('hidden');
+  }
+
+  // Salvare date pentru descărcare
+  const rezultateEl = document.getElementById('rezultate');
+  rezultateEl.dataset.avertizare = avertizareTxt;
+  rezultateEl.dataset.planProgresiv = planProgresivTxt;
+
+  rezultateEl.classList.remove('hidden');
 });
 
 document.getElementById('btn-descarca').addEventListener('click', function () {
@@ -60,7 +111,11 @@ document.getElementById('btn-descarca').addEventListener('click', function () {
   const grasimi = document.getElementById('r-grasimi').textContent;
   const apa = document.getElementById('r-apa').textContent;
 
-  const continut =
+  const rezultateEl = document.getElementById('rezultate');
+  const avertizare = rezultateEl.dataset.avertizare || '';
+  const planProgresiv = rezultateEl.dataset.planProgresiv || '';
+
+  let continut =
     'Necesarul tău zilnic de macronutrienți\n' +
     '========================================\n' +
     'Calorii totale:  ' + calorii + '\n' +
@@ -68,6 +123,17 @@ document.getElementById('btn-descarca').addEventListener('click', function () {
     'Carbohidrați:    ' + carbohidrati + '\n' +
     'Grăsimi:         ' + grasimi + '\n' +
     'Hidratare:       ' + apa + '\n';
+
+  if (avertizare) {
+    continut += '\nATENȚIE: ' + avertizare + '\n';
+  }
+
+  if (planProgresiv) {
+    continut +=
+      '\nReducere progresivă recomandată (max. 100 kcal/zi):\n' +
+      '--------------------------------------------\n' +
+      planProgresiv;
+  }
 
   const blob = new Blob([continut], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);

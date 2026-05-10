@@ -52,7 +52,7 @@
         <label for="obiectiv">Obiectiv</label>
         <select id="obiectiv" required>
           <option value="">-- Alege --</option>
-          <option value="slabire">Slăbire (−500 kcal)</option>
+          <option value="slabire">Slăbire (deficit caloric)</option>
           <option value="mentinere">Menținere</option>
           <option value="masa">Masă musculară (+300 kcal)</option>
         </select>
@@ -69,6 +69,14 @@
         <div>
           <div class="eticheta">Calorii totale</div>
           <div class="valoare" id="r-calorii"></div>
+        </div>
+      </div>
+
+      <div id="r-avertizare" class="card avertizare hidden">
+        <span class="icon">⚠️</span>
+        <div>
+          <div class="eticheta">Atenție – prag minim activat</div>
+          <div class="nota" id="r-avertizare-text"></div>
         </div>
       </div>
 
@@ -102,6 +110,15 @@
         <div>
           <div class="eticheta">Hidratare</div>
           <div class="valoare" id="r-apa"></div>
+        </div>
+      </div>
+
+      <div id="r-recomandare" class="card recomandare hidden">
+        <span class="icon">📅</span>
+        <div>
+          <div class="eticheta">Reducere progresivă recomandată</div>
+          <div class="nota">Nu reduce aportul caloric brusc. Scade cu maximum 100 kcal pe zi:</div>
+          <div id="r-plan-progresiv" class="plan-progresiv"></div>
         </div>
       </div>
 
