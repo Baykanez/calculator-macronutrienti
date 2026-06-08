@@ -98,6 +98,8 @@ document.getElementById('form-calculator').addEventListener('submit', function (
 
   // Salvare date pentru descărcare
   const rezultateEl = document.getElementById('rezultate');
+  rezultateEl.dataset.bmr = Math.round(bmr);
+  rezultateEl.dataset.tdee = tdeeBrut;
   rezultateEl.dataset.avertizare = avertizareTxt;
   rezultateEl.dataset.planProgresiv = planProgresivTxt;
 
@@ -112,15 +114,20 @@ document.getElementById('btn-descarca').addEventListener('click', function () {
   const apa = document.getElementById('r-apa').textContent;
 
   const rezultateEl = document.getElementById('rezultate');
+  const bmr = rezultateEl.dataset.bmr || '';
+  const tdee = rezultateEl.dataset.tdee || '';
   const avertizare = rezultateEl.dataset.avertizare || '';
   const planProgresiv = rezultateEl.dataset.planProgresiv || '';
 
   let continut =
     'Necesarul tău zilnic de macronutrienți\n' +
     '========================================\n' +
+    'BMR:             ' + bmr + ' kcal\n' +
+    'TDEE:            ' + tdee + ' kcal\n' +
+    '----------------------------------------\n' +
     'Calorii totale:  ' + calorii + '\n' +
     'Proteine:        ' + proteine + '\n' +
-    'Carbohidrați:    ' + carbohidrati + '\n' +
+    'Carbohidrați:    ' + carbohidrati + ' (minim 35 g fibre/zi din legume, fructe, cereale integrale)\n' +
     'Grăsimi:         ' + grasimi + '\n' +
     'Hidratare:       ' + apa + '\n';
 
