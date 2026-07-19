@@ -5,9 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calculator Macronutrienți</title>
   <link rel="stylesheet" href="style.css" />
+  <script>
+    (function () {
+      var salvat = localStorage.getItem('tema');
+      var tema = salvat || 'light';
+      document.documentElement.setAttribute('data-theme', tema);
+    })();
+  </script>
 </head>
 <body>
   <div class="container">
+    <button type="button" id="btn-tema" class="btn-tema" aria-label="Comută tema light/dark">
+      <span class="btn-tema-icon">🌙</span>
+    </button>
     <h1>Calculator Macronutrienți</h1>
     <p class="subtitle">Introdu datele tale pentru a afla necesarul zilnic de nutrienți.</p>
 

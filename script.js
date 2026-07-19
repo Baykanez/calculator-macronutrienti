@@ -1,3 +1,20 @@
+const btnTema = document.getElementById('btn-tema');
+const iconTema = btnTema.querySelector('.btn-tema-icon');
+
+function actualizeazaIconTema(tema) {
+  iconTema.textContent = tema === 'dark' ? '☀️' : '🌙';
+}
+
+actualizeazaIconTema(document.documentElement.getAttribute('data-theme'));
+
+btnTema.addEventListener('click', function () {
+  const temaCurenta = document.documentElement.getAttribute('data-theme');
+  const temaNoua = temaCurenta === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', temaNoua);
+  localStorage.setItem('tema', temaNoua);
+  actualizeazaIconTema(temaNoua);
+});
+
 document.getElementById('form-calculator').addEventListener('submit', function (e) {
   e.preventDefault();
 
